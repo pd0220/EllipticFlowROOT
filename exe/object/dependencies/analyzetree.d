@@ -264,10 +264,7 @@ exe/object/analyzetree.o: analyzetree.cc /usr/include/stdc-predef.h \
  /usr/include/c++/9/ratio /usr/include/c++/9/bits/parse_numbers.h \
  /usr/include/c++/9/bits/std_mutex.h \
  /usr/include/c++/9/bits/unique_lock.h /usr/include/c++/9/mutex \
- /usr/include/c++/9/iostream /usr/include/c++/9/fstream \
- /usr/include/x86_64-linux-gnu/c++/9/bits/basic_file.h \
- /usr/include/x86_64-linux-gnu/c++/9/bits/c++io.h \
- /usr/include/c++/9/bits/fstream.tcc /usr/include/c++/9/sstream \
+ /usr/include/c++/9/iostream /usr/include/c++/9/sstream \
  /usr/include/c++/9/bits/sstream.tcc /usr/include/c++/9/numeric \
  /usr/include/c++/9/bits/stl_numeric.h /home/dpesznyak/root/include/TF1.h \
  /home/dpesznyak/root/include/RConfigure.h /usr/include/c++/9/functional \
@@ -523,6 +520,7 @@ exe/object/analyzetree.o: analyzetree.cc /usr/include/stdc-predef.h \
  /home/dpesznyak/root/include/Vc/common/simdarrayfwd.h \
  /home/dpesznyak/root/include/Vc/common/memoryfwd.h \
  /usr/include/c++/9/ext/stdio_sync_filebuf.h \
+ /usr/include/x86_64-linux-gnu/c++/9/bits/c++io.h \
  /home/dpesznyak/root/include/Vc/Memory \
  /home/dpesznyak/root/include/Vc/common/memory.h \
  /home/dpesznyak/root/include/Vc/common/memorybase.h \
@@ -636,7 +634,9 @@ exe/object/analyzetree.o: analyzetree.cc /usr/include/stdc-predef.h \
  /home/dpesznyak/root/include/TFitResultPtr.h \
  /home/dpesznyak/root/include/TGraph.h \
  /home/dpesznyak/root/include/TGraphErrors.h \
- /home/dpesznyak/root/include/TGraph.h
+ /home/dpesznyak/root/include/TGraph.h \
+ /home/dpesznyak/root/include/TLatex.h \
+ /home/dpesznyak/root/include/TText.h
 
 /usr/include/stdc-predef.h:
 
@@ -1292,14 +1292,6 @@ particle_tree.h:
 
 /usr/include/c++/9/iostream:
 
-/usr/include/c++/9/fstream:
-
-/usr/include/x86_64-linux-gnu/c++/9/bits/basic_file.h:
-
-/usr/include/x86_64-linux-gnu/c++/9/bits/c++io.h:
-
-/usr/include/c++/9/bits/fstream.tcc:
-
 /usr/include/c++/9/sstream:
 
 /usr/include/c++/9/bits/sstream.tcc:
@@ -1822,6 +1814,8 @@ particle_tree.h:
 
 /usr/include/c++/9/ext/stdio_sync_filebuf.h:
 
+/usr/include/x86_64-linux-gnu/c++/9/bits/c++io.h:
+
 /home/dpesznyak/root/include/Vc/Memory:
 
 /home/dpesznyak/root/include/Vc/common/memory.h:
@@ -2055,3 +2049,7 @@ particle_tree.h:
 /home/dpesznyak/root/include/TGraphErrors.h:
 
 /home/dpesznyak/root/include/TGraph.h:
+
+/home/dpesznyak/root/include/TLatex.h:
+
+/home/dpesznyak/root/include/TText.h:

@@ -4,7 +4,6 @@
 #define particle_tree_cxx
 #include "particle_tree.h"
 #include <iostream>
-#include <fstream>
 #include <string>
 #include <sstream>
 #include <cmath>
@@ -20,6 +19,7 @@
 #include <TFitResultPtr.h>
 #include <TGraph.h>
 #include <TGraphErrors.h>
+#include <TLatex.h>
 
 // ------------------------------------------------------------------------------------------------------------------------------
 
@@ -46,79 +46,8 @@ int main(int argc, const char **argv)
 
   // ------------------------------------------------------------------------------------------------------------------------------
 
-  // reading reaction plane resolution values from outer file
-  // start reading
-  std::ifstream fileToRead;
-  std::string fileName = "reactionplane_resolution_rxnp.txt";
-  fileToRead.open(fileName);
-
-  // determine number of columns
-  std::string firstLine;
-  std::getline(fileToRead, firstLine);
-  std::stringstream firstLineStream(firstLine);
-
-  // number of columns in given file
-  int numOfCols = 0;
-  std::string tmpString;
-  // count number of writes to a temporary string container
-  while (firstLineStream >> tmpString)
-    numOfCols++;
-
-  fileToRead.close();
-
-  // string for all the lines
-  std::string line;
-
-  // data structures
-  std::vector<double> RPCentrality;
-  std::vector<double> RPResolution;
-
-  // reopen file
-  fileToRead.open(fileName);
-  // check if open
-  if (fileToRead.is_open())
-  {
-    // read line by line
-    int i = 0;
-    while (std::getline(fileToRead, line))
-    {
-      // using stringstream to write data
-      std::stringstream dataStream(line);
-      double centralityTemp = 0.;
-      double resolutionTemp = 0.;
-      dataStream >> centralityTemp;
-      dataStream >> resolutionTemp;
-      RPCentrality.push_back(centralityTemp);
-      RPResolution.push_back(resolutionTemp);
-      i++;
-    }
-    // close file
-    fileToRead.close();
-  }
-  // error check
-  else
-  {
-    std::cout << "ERROR\nProblem occured while reading given file." << std::endl;
-    std::exit(-1);
-  }
-
-  // ------------------------------------------------------------------------------------------------------------------------------
-
-  // reaction plane resolution means
-  // split resolution containers
-  std::vector<double> RPResolution1, RPResolution2;
-  for (int iRes = 0; iRes < static_cast<int>(RPResolution.size()); iRes++)
-  {
-    if (RPCentrality[iRes] >= centrality1.first && RPCentrality[iRes] <= centrality1.second)
-      RPResolution1.push_back(RPResolution[iRes]);
-    else if (RPCentrality[iRes] >= centrality2.first && RPCentrality[iRes] <= centrality2.second)
-      RPResolution2.push_back(RPResolution[iRes]);
-  }
-  // means
-  double RPMean1 = std::accumulate(RPResolution1.begin(), RPResolution1.end(), 0.) / static_cast<int>(RPResolution1.size());
-  double RPMean2 = std::accumulate(RPResolution2.begin(), RPResolution2.end(), 0.) / static_cast<int>(RPResolution2.size());
-  // container of means
-  std::vector<double> RPMeans = {RPMean1, RPMean2};
+  // mean reaction plane resolutions (computed somewhere else...) for the centrality classes
+  std::vector<double> RPMeans = {0.3377691449696019, 0.29239227186291494};
 
   // ------------------------------------------------------------------------------------------------------------------------------
 
@@ -235,6 +164,7 @@ int main(int argc, const char **argv)
       double phi = std::atan2(p.py[iPart], p.px[iPart]);
       // calculate azimuthal angle for given particle (in reaction plane)
       double phiRP = phi - reactionPlane;
+      // fix to [-pi / 2, pi / 2]
       while(phiRP > M_PI_2) phiRP -= M_PI;
       while(phiRP < -M_PI_2) phiRP += M_PI;
 
@@ -248,7 +178,7 @@ int main(int argc, const char **argv)
   // ------------------------------------------------------------------------------------------------------------------------------
 
   // MAKE FIT(S) to determine elliptic flow (v2)
-  // define ansatz ~ 1D Fourier expansion in the azimuthal angle [-pi, pi]
+  // define ansatz ~ 1D Fourier expansion in the azimuthal angle [-pi / 2, pi / 2]
   TF1 *FourierFitFunc = new TF1("FourierFit", "[0] + [1] * 2 * cos(2 * x)", -M_PI_2, M_PI_2);
   // loop through centralities and pT splittings
   for (int iCentr = 0; iCentr < NC; iCentr++)
@@ -302,6 +232,9 @@ int main(int argc, const char **argv)
     v2Result[i]->Write();
     v2Error[i]->Write();
   }
+  for (int iCentr = 0; iCentr < NC; iCentr++)
+    for (int ipT = 0; ipT < NpT; ipT++)
+      azimuthDistribution[iCentr][ipT]->Write();
   f->Write();
   f->Close();
 }
