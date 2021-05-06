@@ -41,13 +41,17 @@ int main(int argc, const char **argv)
   // ------------------------------------------------------------------------------------------------------------------------------
 
   // contiainers for elliptic flow (v2) results
+  // with reaction plane resolution correction
   std::vector<TGraph *> v2Result(NC);
   std::vector<TGraphErrors *> v2Error(NC);
+  // without reaction plane resolution correction
+  std::vector<TGraph *> v2ResultNonCorr(NC);
+  std::vector<TGraphErrors *> v2ErrorNonCorr(NC);
 
   // ------------------------------------------------------------------------------------------------------------------------------
 
   // mean reaction plane resolutions (computed somewhere else...) for the centrality classes
-  std::vector<double> RPMeans = {0.3377691449696019, 0.29239227186291494};
+  std::vector<double> RPMeans = {0.678076519159388, 0.5962794418797447};
 
   // ------------------------------------------------------------------------------------------------------------------------------
 
@@ -165,8 +169,10 @@ int main(int argc, const char **argv)
       // calculate azimuthal angle for given particle (in reaction plane)
       double phiRP = phi - reactionPlane;
       // fix to [-pi / 2, pi / 2]
-      while(phiRP > M_PI_2) phiRP -= M_PI;
-      while(phiRP < -M_PI_2) phiRP += M_PI;
+      while (phiRP > M_PI_2)
+        phiRP -= M_PI;
+      while (phiRP < -M_PI_2)
+        phiRP += M_PI;
 
       // add to specific histogram
       azimuthDistribution[centralityRange][pTRange]->Fill(phiRP);
@@ -184,13 +190,22 @@ int main(int argc, const char **argv)
   for (int iCentr = 0; iCentr < NC; iCentr++)
   {
     // save results to...
+    // with correction
     v2Result[iCentr] = new TGraph(NpT);
     v2Result[iCentr]->SetName(Form("v_{2} with centrality %i-%i [%]", centralities[iCentr].first, centralities[iCentr].second));
     v2Result[iCentr]->SetTitle(Form("v_{2} with centrality %i-%i [%]", centralities[iCentr].first, centralities[iCentr].second));
     v2Error[iCentr] = new TGraphErrors(NpT);
     v2Error[iCentr]->SetName(Form("v_{2} errors with centrality %i-%i [%]", centralities[iCentr].first, centralities[iCentr].second));
     v2Error[iCentr]->SetTitle(Form("v_{2} with centrality %i-%i [%]", centralities[iCentr].first, centralities[iCentr].second));
+    // without correction
+    v2ResultNonCorr[iCentr] = new TGraph(NpT);
+    v2ResultNonCorr[iCentr]->SetName(Form("v_{2} with centrality %i-%i [%] (without correction)", centralities[iCentr].first, centralities[iCentr].second));
+    v2ResultNonCorr[iCentr]->SetTitle(Form("v_{2} with centrality %i-%i [%] (without correction)", centralities[iCentr].first, centralities[iCentr].second));
+    v2ErrorNonCorr[iCentr] = new TGraphErrors(NpT);
+    v2ErrorNonCorr[iCentr]->SetName(Form("v_{2} errors with centrality %i-%i [%] (without correction)", centralities[iCentr].first, centralities[iCentr].second));
+    v2ErrorNonCorr[iCentr]->SetTitle(Form("v_{2} with centrality %i-%i [%] (without correction)", centralities[iCentr].first, centralities[iCentr].second));
 
+    // loop for pT values
     for (int ipT = 0; ipT < NpT; ipT++)
     {
       // make fit
@@ -207,11 +222,17 @@ int main(int argc, const char **argv)
       double ABCov = r->CovMatrix(1, 0);
 
       // elliptic flow (v2) and correction via reaction plane resolution
+      double v2NonCorr = B / A;
       double v2 = B / A / RPMeans[iCentr];
       // error estimation through error propagation
+      double v2ErrNonCorr = std::abs(B / A) * std::sqrt((AErr * AErr) / (A * A) + (BErr * BErr) / (B * B) - 2 * ABCov / (A * B));
       double v2Err = std::abs(B / A) * std::sqrt((AErr * AErr) / (A * A) + (BErr * BErr) / (B * B) - 2 * ABCov / (A * B)) / RPMeans[iCentr];
 
       std::cout << v2 << " +/-" << v2Err << std::endl;
+
+      v2ResultNonCorr[iCentr]->SetPoint(ipT, pTSplitting[ipT], v2NonCorr);
+      v2ErrorNonCorr[iCentr]->SetPoint(ipT, pTSplitting[ipT], v2NonCorr);
+      v2ErrorNonCorr[iCentr]->SetPointError(ipT, 0., v2ErrNonCorr);
 
       v2Result[iCentr]->SetPoint(ipT, pTSplitting[ipT], v2);
       v2Error[iCentr]->SetPoint(ipT, pTSplitting[ipT], v2);
@@ -233,6 +254,8 @@ int main(int argc, const char **argv)
   {
     v2Result[i]->Write();
     v2Error[i]->Write();
+    v2ResultNonCorr[i]->Write();
+    v2ErrorNonCorr[i]->Write();
   }
   for (int iCentr = 0; iCentr < NC; iCentr++)
     for (int ipT = 0; ipT < NpT; ipT++)
