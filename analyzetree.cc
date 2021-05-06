@@ -186,8 +186,10 @@ int main(int argc, const char **argv)
     // save results to...
     v2Result[iCentr] = new TGraph(NpT);
     v2Result[iCentr]->SetName(Form("v_{2} with centrality %i-%i [%]", centralities[iCentr].first, centralities[iCentr].second));
+    v2Result[iCentr]->SetTitle(Form("v_{2} with centrality %i-%i [%]", centralities[iCentr].first, centralities[iCentr].second));
     v2Error[iCentr] = new TGraphErrors(NpT);
     v2Error[iCentr]->SetName(Form("v_{2} errors with centrality %i-%i [%]", centralities[iCentr].first, centralities[iCentr].second));
+    v2Error[iCentr]->SetTitle(Form("v_{2} with centrality %i-%i [%]", centralities[iCentr].first, centralities[iCentr].second));
 
     for (int ipT = 0; ipT < NpT; ipT++)
     {
